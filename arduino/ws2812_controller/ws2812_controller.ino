@@ -1,49 +1,43 @@
-/*
-* This example works for ESP8266 & ESP32 and uses the NeoPixelBus library instead of the one bundle
-* Sketch written by Joey Babcock - https://joeybabcock.me/blog/, and Scott Lawson (Below) 
-* Codebase created by ScottLawsonBC - https://github.com/scottlawsonbc
-*/
-#include <NeoPixelBus.h>
-
-#if defined(ESP8266)
+#include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#elif defined(ESP32)
-#include <WiFi.h>
-#else
-#error "This is not a ESP8266 or ESP32!"
-#endif
+#include <NeoPixelBus.h>
+
+//:::NOTICE::: this file includes additional setup for a secondary output pin
+//which is implemented for a second strip output in the complementary color of the first.
 
 // Set to the number of LEDs in your LED strip
-#define NUM_LEDS 60
+#define NUM_LEDS 150
 // Maximum number of packets to hold in the buffer. Don't change this.
 #define BUFFER_LEN 1024
 // Toggles FPS output (1 = print FPS over serial, 0 = disable output)
-#define PRINT_FPS 1
+#define PRINT_FPS 0
 
 //NeoPixelBus settings
 const uint8_t PixelPin = 3;  // make sure to set this to the correct pin, ignored for Esp8266(set to 3 by default for DMA)
+// const uint8_t PixelPin2 = 4; //Secondary pin on GPIO13 to start complementary color input to second LED string
 
 // Wifi and socket settings
-const char* ssid     = "YOUR_WIFI_SSID";
-const char* password = "YOUR_WIFI_PASSWORD";
+const char* ssid     = "minas_tirith";
+const char* password = "th3wh1tetreesu23!";
 unsigned int localPort = 7777;
 char packetBuffer[BUFFER_LEN];
 
-uint8_t N = 0;
+// LED strip
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> ledstrip(NUM_LEDS, PixelPin);
+//NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart0800KbpsMethod> ledstrip2(NUM_LEDS); //Uses Uart capability on GPIO2
 
 WiFiUDP port;
+
 // Network information
 // IP must match the IP in config.py
-IPAddress ip(192, 168, 0, 150);
+IPAddress ip(10,0,0,50);
 // Set gateway to your router's gateway
-IPAddress gateway(192, 168, 0, 1);
+IPAddress gateway(10,0,0,1);
 IPAddress subnet(255, 255, 255, 0);
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> ledstrip(NUM_LEDS, PixelPin);
 
 void setup() {
-    Serial.begin(115200);
-    WiFi.mode(WIFI_STA);
+    Serial.begin(9600);
     WiFi.config(ip, gateway, subnet);
     WiFi.begin(ssid, password);
     Serial.println("");
@@ -52,19 +46,19 @@ void setup() {
         delay(500);
         Serial.print(".");
     }
-    
     Serial.println("");
     Serial.print("Connected to ");
     Serial.println(ssid);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    
     port.begin(localPort);
-    
     ledstrip.Begin();//Begin output
+    //ledstrip2.Begin();
     ledstrip.Show();//Clear the strip for use
+    //ledstrip2.Show();
 }
 
+uint8_t N = 0;
 #if PRINT_FPS
     uint16_t fpsCounter = 0;
     uint32_t secondTimer = 0;
@@ -79,8 +73,11 @@ void loop() {
         for(int i = 0; i < len; i+=4) {
             packetBuffer[len] = 0;
             N = packetBuffer[i];
-            RgbColor pixel((uint8_t)packetBuffer[i+1], (uint8_t)packetBuffer[i+2], (uint8_t)packetBuffer[i+3]);//color
-            ledstrip.SetPixelColor(N, pixel);//N is the pixel number
+            RgbColor pixel((uint8_t)packetBuffer[i+1], (uint8_t)packetBuffer[i+2], (uint8_t)packetBuffer[i+3]);
+            //RgbColor pixel2((uint8_t)packetBuffer[i+1], (uint8_t)packetBuffer[i+2], (uint8_t)packetBuffer[i+3]);
+              
+            ledstrip.SetPixelColor(N, pixel);
+            //ledstrip2.SetPixelColor(N, pixel);
         } 
         ledstrip.Show();
         #if PRINT_FPS
