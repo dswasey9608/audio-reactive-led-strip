@@ -15,7 +15,6 @@
 
 //NeoPixelBus settings
 const uint8_t PixelPin = 3;  // make sure to set this to the correct pin, ignored for Esp8266(set to 3 by default for DMA)
-// const uint8_t PixelPin2 = 4; //Secondary pin on GPIO13 to start complementary color input to second LED string
 
 // Wifi and socket settings
 const char* ssid     = "minas_tirith";
@@ -25,7 +24,6 @@ char packetBuffer[BUFFER_LEN];
 
 // LED strip
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> ledstrip(NUM_LEDS, PixelPin);
-//NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart0800KbpsMethod> ledstrip2(NUM_LEDS); //Uses Uart capability on GPIO2
 
 WiFiUDP port;
 
