@@ -51,9 +51,7 @@ void setup() {
     Serial.println(WiFi.localIP());
     port.begin(localPort);
     ledstrip.Begin();//Begin output
-    //ledstrip2.Begin();
     ledstrip.Show();//Clear the strip for use
-    //ledstrip2.Show();
 }
 
 uint8_t N = 0;
@@ -72,7 +70,6 @@ void loop() {
             packetBuffer[len] = 0;
             N = packetBuffer[i];
             RgbColor pixel((uint8_t)packetBuffer[i+1], (uint8_t)packetBuffer[i+2], (uint8_t)packetBuffer[i+3]);
-            //RgbColor pixel2((uint8_t)packetBuffer[i+1], (uint8_t)packetBuffer[i+2], (uint8_t)packetBuffer[i+3]);
               
             ledstrip.SetPixelColor(N, pixel);
             //ledstrip2.SetPixelColor(N, pixel);
