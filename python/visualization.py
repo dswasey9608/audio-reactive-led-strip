@@ -103,7 +103,7 @@ gain = dsp.ExpFilter(np.tile(0.01, config.N_FFT_BINS),
                      alpha_decay=0.001, alpha_rise=0.99)
 
 # Filters for rainbow cycle
-rain_filt_decay = 0.4
+rain_filt_decay = 0.3
 rainr_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS),
                           alpha_decay=rain_filt_decay, alpha_rise=0.99)
 raing_filt = dsp.ExpFilter(np.tile(0.01, config.N_PIXELS),
